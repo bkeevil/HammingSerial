@@ -43,22 +43,17 @@ bool HammingSerial::readToBuffer() {
   byte b;
   byte in[2];
 
-  if ((readState == PACKET_READ_STATE_END) && _serial->available()) {
-    b = _serial->read();
-    if (b == PACKET_START_SYMBOL) {
-      readState = PACKET_READ_STATE_START;
-    } else {
-      readState = PACKET_READ_STATE_UNKNOWN;
-      ++errorCount;
-      rx_buffer.clear();
-    }
+  if (readState == PACKET_READ_STATE_END) {
+    readState = PACKET_READ_STATE_UNKNOWN;
   }
   
   while ((readState == PACKET_READ_STATE_UNKNOWN) && _serial->available()) {
     b = _serial->read();
     if (b == PACKET_START_SYMBOL) {
       readState = PACKET_READ_STATE_START;
-    } 
+    } else {      
+      ++errorCount;
+    }
   }
   
   if (readState == PACKET_READ_STATE_START) {
